@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
 
   before_action :find_post, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_admin!, except: [:index, :show]
 
   def index
     @posts = Post.all
@@ -11,10 +12,10 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new
-    if @post.save(post_params)
+      @post = Post.new(post_params)
+    if @post.save
       flash[:notice] = "Successfully created post!"
-      redirect_to post_patch(@post)
+      redirect_to post_path(@post)
     else
       flash[:alert] = "Error creating new post!"
       render :new
@@ -30,7 +31,7 @@ class PostsController < ApplicationController
   def update
     if @post.update_attributes(post_params)
       flash[:notice] = "Successfully updated post!"
-      redirect_to post_path(@posts)
+      redirect_to post_path(@post)
     else
       flash[:alert] = "Error updating post!"
       render :edit
